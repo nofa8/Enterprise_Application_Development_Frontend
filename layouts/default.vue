@@ -80,7 +80,7 @@
     <!-- Footer -->
     <footer class="bg-gray-800 text-white">
       <div class="container mx-auto max-w-screen-lg px-4 py-3 text-center">
-        © 2025 My App. All rights reserved.
+        © 2025 Shoppein. All rights not reserved.
       </div>
     </footer>
   </div>

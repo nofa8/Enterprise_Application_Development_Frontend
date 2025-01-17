@@ -44,15 +44,17 @@
     </div>
 
     <!-- Volumes -->
-    <div v-if="authStore.getUserType === 'Manager'" class="mt-10">
+    <div class="mt-10">
       <h3 class="text-xl font-semibold mb-4 border-b border-gray-200 pb-2">
         Volumes
       </h3>
-      <ul class="space-y-4">
+      <ul class="space-y-4" >
         <li
           v-for="volume in order.volumes"
           :key="volume.id"
-          class="p-4 bg-gray-50 rounded-lg shadow-sm"
+          class=" hover:bg-gray-100 cursor-pointer p-4 bg-gray-50 rounded-lg shadow-sm"
+          @click="getVolumeDetails(volume)"
+          :value="volume"
         >
           <div class="grid grid-cols-2 gap-x-4">
             <span class="font-semibold">Volume ID:</span>
@@ -91,16 +93,20 @@ import { useAuthStore } from "~/store/auth";
 
 const route = useRoute();
 const code = route.params.code;
-
+const router = useRouter();
 const config = useRuntimeConfig();
 const api = config.public.API_URL;
 
 const authStore = useAuthStore();
 const order = ref(null);
 
+const getVolumeDetails = (volume) => {
+  router.push(`${code}/volumes/${volume.code}`);
+};
+
 const fetchOrderDetails = async () => {
   try {
-    const token = localStorage.getItem("authToken");
+    const token = authStore.token;
     if (!token) {
       throw new Error("No authentication token found.");
     }
@@ -118,7 +124,7 @@ const fetchOrderDetails = async () => {
     }
 
     order.value = await response.json();
-    console.log(order.value.volumes);
+
   } catch (err) {
     console.error(err.message);
   }
