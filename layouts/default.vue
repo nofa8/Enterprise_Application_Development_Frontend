@@ -1,12 +1,3 @@
-<script setup>
-import { useAuthStore } from '~/store/auth';
-
-
-
-const authStore = useAuthStore(); 
-
-</script>
-
 <template>
   <div class="flex flex-col min-h-screen">
     <!-- Navbar -->
@@ -27,18 +18,14 @@ const authStore = useAuthStore();
             </li>
             <!-- Conditional Login/Logout -->
             <li v-if="authStore.isLoggedIn">
-              <button
-                @click="authStore.logout"
-                class="px-4 py-2 bg-red-500 rounded text-white hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300"
-              >
+              <button @click="authStore.logout"
+                class="px-4 py-2 bg-red-500 rounded text-white hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300">
                 Logout
               </button>
             </li>
             <li v-else>
-              <NuxtLink
-                to="/login"
-                class="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-              >
+              <NuxtLink to="/login"
+                class="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">
                 Login
               </NuxtLink>
             </li>
@@ -62,3 +49,9 @@ const authStore = useAuthStore();
     </footer>
   </div>
 </template>
+
+<script setup>
+import { useAuthStore } from '~/store/auth';
+
+const authStore = useAuthStore();
+</script>
