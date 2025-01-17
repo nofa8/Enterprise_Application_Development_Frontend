@@ -47,7 +47,7 @@
           to="/sensors/create"
           class="block px-4 py-3 text-center bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
         >
-          Insert Sensor Values
+          Insert Sensor Values (Only for Test purposes)
         </nuxt-link>
       </div>
     </div>
