@@ -2,6 +2,8 @@
   <div class="dashboard">
     <h1>Welcome to the Dashboard</h1>
     <button @click="logout">Logout</button>
+    <button @click="goToOrders">View Orders</button>
+
   </div>
 </template>
 
@@ -12,6 +14,10 @@ const router = useRouter();
 const logout = () => {
   localStorage.removeItem('authToken');
   router.push('/login');
+};
+
+const goToOrders = () => {
+  router.push('/orders');
 };
 </script>
 
