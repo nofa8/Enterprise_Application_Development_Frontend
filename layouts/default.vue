@@ -11,8 +11,13 @@
         <nav>
           <ul class="flex space-x-6 items-center">
             <li>
-              <h1 class="hover:underline" v-if="authStore.isLoggedIn">{{ authStore.user?.name }}</h1>
+              <!-- Link para o perfil usando o email -->
+              <NuxtLink :to="`/clients/${authStore.user?.id}`" class="hover:underline" v-if="authStore.isLoggedIn">
+                {{ authStore.user?.name }}
+              </NuxtLink>
             </li>
+
+
             <li>
               <NuxtLink to="/dashboard" class="hover:underline">Dashboard</NuxtLink>
             </li>
