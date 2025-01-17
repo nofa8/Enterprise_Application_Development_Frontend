@@ -14,7 +14,7 @@
           <th class="border px-4 py-2">State</th>
           <th class="border px-4 py-2">Last Update</th>
           <th class="border px-4 py-2">Purchase Date</th>
-          <th v-if="authStore.user.role == 'Manager'" class="border px-4 py-2">Client Name</th>
+          <th v-if="authStore.getUserType == 'Manager'" class="border px-4 py-2">Client Name</th>
           <th class="border px-4 py-2"></th>
         </tr>
       </thead>
@@ -25,7 +25,7 @@
           <td class="border px-4 py-2">{{ order.state }}</td>
           <td class="border px-4 py-2">{{ order.lastUpdate }}</td>
           <td class="border px-4 py-2">{{ order.purchaseDate }}</td>
-          <td v-if="authStore.user.role == 'Manager'" class="border px-4 py-2">{{ order.client?.name || 'N/A' }}</td>
+          <td v-if="authStore.getUserType == 'Manager'" class="border px-4 py-2">{{ order.client?.name || 'N/A' }}</td>
           <td class="border px-4 py-2">
             <nuxt-link :to="`/orders/${order.code}`" class="text-blue-500 hover:underline">Details</nuxt-link>
           </td>
@@ -44,6 +44,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '~/store/auth';
 
+
 const authStore = useAuthStore();
 
 const orders = ref([]);
@@ -59,7 +60,7 @@ onMounted(() => {
 const fetchOrders = async () => {
   loading.value = true;
   try {
-    const token = localStorage.getItem('authToken');
+    const token = authStore.token;
     if (!token) {
       throw new Error('No authentication token found.');
     }

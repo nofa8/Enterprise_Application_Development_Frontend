@@ -8,7 +8,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isLoggedIn = computed(() => isLogged.value);
   
   
-  const getUserType = computed(() => user.value.role);
+  const getUserType = computed(() => user.value?.role);
 
 
   const api = useRuntimeConfig().public.API_URL;
@@ -67,7 +67,7 @@ export const useAuthStore = defineStore("auth", () => {
     isLogged.value = false;
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
-    router.push('/login');
+    router.push('/auth/login');
   }
 
   async function restoreSession() {
@@ -105,6 +105,7 @@ export const useAuthStore = defineStore("auth", () => {
     token,
     user,
     isLoggedIn,
+    getUserType,
     handleLogin,
     login,
     logout,

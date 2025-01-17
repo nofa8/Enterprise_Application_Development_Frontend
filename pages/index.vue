@@ -1,7 +1,7 @@
 <script setup>
 import { navigateTo } from '#app';
 
-navigateTo('/login');
+navigateTo('/auth/login');
 </script>
 
 

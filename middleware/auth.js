@@ -1,15 +1,18 @@
 export default defineNuxtRouteMiddleware((to) => {
-  const token = localStorage.getItem("authToken");
-
-  if (token && !store.getters["auth/isLogged"]) {
-    store.dispatch("auth/restoreSession");
+  const token = ref('');
+  if (process.client) {
+    token.value = localStorage.getItem('token');
+    if (token.value && !store.getters["auth/isLogged"]) {
+      store.dispatch("auth/restoreSession");
+      console.log("restored session");
+    }
   }
 
-  if (!token && to.path !== "/login") {
-    return navigateTo("/login");
+  if (!token.value && to.path !== "/auth/login") {
+    return navigateTo("/auth/login");
   }
 
-  if (token && to.path === "/login") {
+  if (token.value && to.path === "/auth/login") {
     return navigateTo("/dashboard");
   }
 });
