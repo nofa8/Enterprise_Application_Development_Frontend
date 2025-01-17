@@ -38,9 +38,17 @@
           <ul
             class="flex flex-col md:flex-row md:space-x-6 items-center p-4 md:p-0"
           >
-            <li>
-              <!-- Link para o perfil usando o email -->
+            <li v-if="authStore.getUserType == 'Client'">
+
+              <!-- Link para o perfil usando o id -->
               <NuxtLink :to="`/clients/${authStore.user?.id}`" class="hover:underline" v-if="authStore.isLoggedIn">
+                {{ authStore.user?.name }}
+              </NuxtLink>
+
+            </li>
+            <li v-else>
+              <!-- Link para o perfil usando o id -->
+              <NuxtLink class="hover:underline" v-if="authStore.isLoggedIn">
                 {{ authStore.user?.name }}
               </NuxtLink>
 

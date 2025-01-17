@@ -41,6 +41,10 @@
               <span class="font-semibold">Value:</span>
               <span>{{ sensor.value }}</span>
             </div>
+            <div class="grid grid-cols-2 gap-x-4">
+              <span class="font-semibold">Last Update:</span>
+              <span> {{ formatDate(sensor.lastUpdate) }}</span>
+            </div>
           </li>
         </ul>
         <p v-else class="text-gray-500">No sensors available.</p>
@@ -67,6 +71,10 @@
               <span class="font-semibold">Description:</span>
               <span>{{ product.description }}</span>
             </div>
+            <div class="grid grid-cols-2 gap-x-4">
+              <span class="font-semibold">Amount:</span>
+              <span>{{ product.amount }}</span>
+            </div>
           </li>
         </ul>
         <p v-else class="text-gray-500">No products available.</p>
@@ -75,7 +83,7 @@
       <!-- Return Button -->
       <div class="mt-8 text-center">
         <nuxt-link
-          to="/orders"
+          :to="`/orders/${codeOrder}`"
           class="inline-block px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
         >
           Return
@@ -123,7 +131,7 @@
       }
   
       volume.value = await response.json();
-      console.log(volume.value);
+      // console.log(volume.value);
     } catch (err) {
       console.error(err.message);
     }

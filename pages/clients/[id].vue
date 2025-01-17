@@ -27,7 +27,7 @@
                     </div>
                     <div class="flex justify-between items-center mt-2">
                         <span class="font-medium text-gray-700">Price:</span>
-                        <span class="text-gray-900">{{ order.price | currency }}</span>
+                        <span class="text-gray-900">{{ order.price+" €" }}</span>
                     </div>
                     <div class="flex justify-between items-center mt-2">
                         <span class="font-medium text-gray-700">State:</span>
@@ -45,11 +45,16 @@
         </div>
 
         <!-- Botão de retorno -->
-        <div class="mt-8">
+        <div v-if="authStore.getUserType == 'Manager' " class="mt-8">
+            <nuxt-link to="/clients"
+                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">Return to Clients</nuxt-link>
+        </div>
+        <div v-else class="mt-8">
             <nuxt-link to="/dashboard"
                 class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">Return to
                 Dashboard</nuxt-link>
         </div>
+        
     </div>
 </template>
 
@@ -80,7 +85,7 @@ const formatDate = (timestamp) => {
 
 const fetchClientDetails = async () => {
     try {
-        const token = localStorage.getItem('authToken');
+        const token = authStore.token;
         if (!token) {
             throw new Error('No authentication token found.');
         }

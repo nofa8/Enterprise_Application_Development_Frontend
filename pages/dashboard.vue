@@ -22,19 +22,19 @@
         <div v-if="authStore.getUserType === 'Manager'" class="flex flex-col space-y-4">
           <nuxt-link
             to="/clients"
-            class="block px-4 py-3 text-center bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition"
+            class="block px-4 py-3 text-center bg-yellow-700 text-white rounded-lg hover:bg-yellow-800 transition"
           >
-            View Users
+            View Clients
           </nuxt-link>
           <nuxt-link
             to="/products"
-            class="block px-4 py-3 text-center bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition"
+            class="block px-4 py-3 text-center bg-yellow-700 text-white rounded-lg hover:bg-yellow-800 transition"
           >
             View Products
           </nuxt-link>
           <nuxt-link
             to="/orders"
-            class="block px-4 py-3 text-center bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition"
+            class="block px-4 py-3 text-center bg-yellow-700 text-white rounded-lg hover:bg-yellow-800 transition"
           >
             View Orders
           </nuxt-link>
