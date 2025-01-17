@@ -67,6 +67,7 @@ export const useAuthStore = defineStore("auth", () => {
     isLogged.value = false;
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
+    router.push('/login');
   }
 
   async function restoreSession() {
