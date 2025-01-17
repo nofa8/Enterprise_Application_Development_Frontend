@@ -27,10 +27,10 @@
             View Clients
           </nuxt-link>
           <nuxt-link
-            to="/products"
+            to="/sensors"
             class="block px-4 py-3 text-center bg-yellow-700 text-white rounded-lg hover:bg-yellow-800 transition"
           >
-            View Products
+            View Sensors
           </nuxt-link>
           <nuxt-link
             to="/orders"

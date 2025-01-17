@@ -9,7 +9,9 @@ export const useAuthStore = defineStore("auth", () => {
   
   
   const getUserType = computed(() => user.value?.role);
-
+  const getUserName = computed(() => user.value?.name);
+  
+  const getUserEmail = computed(() => user.value?.email);
 
   const api = useRuntimeConfig().public.API_URL;
 
@@ -110,5 +112,6 @@ export const useAuthStore = defineStore("auth", () => {
     login,
     logout,
     restoreSession,
+    getUserEmail,getUserName
   };
 });

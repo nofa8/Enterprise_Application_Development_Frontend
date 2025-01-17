@@ -140,7 +140,7 @@ const generateInvoice = async () => {
 
   // Generate the QR code and draw it on the PDF
   try {
-    const qrCodeDataUrl = await QRCode.toDataURL(url);
+    const qrCodeDataUrl = await QRCode.toDataURL("http://localhost:3000/orders/"+ code);
 
     // Draw the QR code image
     doc.addImage(qrCodeDataUrl, 'PNG', 160, 50, 40, 40);
@@ -152,8 +152,8 @@ const generateInvoice = async () => {
     doc.text(`Purchase Date: ${order.value.purchaseDate}`, 20, 60);
 
     // Add client information
-    doc.text(`Client Name: ${order.value.client?.name || "N/A"}`, 20, 70);
-    doc.text(`Client Email: ${order.value.client?.email || "N/A"}`, 20, 80);
+    doc.text(`Client Name: ${ authStore.getUserType=='Client' ? authStore.getUserName  : order.value.client?.name || "N/A"}`, 20, 70);
+    doc.text(`Client Email: ${ authStore.getUserType=='Client' ? authStore.getUserEmail : order.value.client?.email || "N/A"}`, 20, 80);
 
     // Add volumes info
     doc.text("Volumes:", 20, 100);
