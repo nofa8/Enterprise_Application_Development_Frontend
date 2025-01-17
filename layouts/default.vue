@@ -39,10 +39,14 @@
             class="flex flex-col md:flex-row md:space-x-6 items-center p-4 md:p-0"
           >
             <li>
-              <h1 v-if="authStore.isLoggedIn" class="hover:underline">
+              <!-- Link para o perfil usando o email -->
+              <NuxtLink :to="`/clients/${authStore.user?.id}`" class="hover:underline" v-if="authStore.isLoggedIn">
                 {{ authStore.user?.name }}
-              </h1>
+              </NuxtLink>
+
             </li>
+
+
             <li>
               <NuxtLink to="/dashboard" class="hover:underline"
                 >Dashboard</NuxtLink
