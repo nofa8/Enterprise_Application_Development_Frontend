@@ -27,20 +27,17 @@
     <div v-else-if="error" class="message error">{{ error }}</div>
 
     <div v-else>
-
-
       <!-- Display "No sensors found" message if no sensors match the filter -->
       <div v-if="filteredSensors.length === 0" class="message not-found">
         No sensors found for the selected filter.
       </div>
 
-
       <div v-for="sensor in filteredSensors" :key="sensor.code" class="sensor-card">
-        <h2 class="sensor-title">{{ sensor.sensorType }} (Code: {{ sensor.code }})</h2>
+        <h2 class="sensor-title">{{ sensorTypeLabel(sensor.sensorTypeCode) }} (Code: {{ sensor.code }})</h2>
         <ul class="sensor-log">
           <li v-for="log in sortedLogs(sensor.log)" :key="log.timestamp" class="log-item">
             <span class="log-timestamp">{{ log.timestamp }}</span>
-            <span class="log-value">Value: {{ log.value }}</span>
+            <span class="log-value">{{ formattedValue(sensor.value, sensor.sensorTypeCode) }}</span>
           </li>
         </ul>
       </div>
@@ -65,6 +62,7 @@ const sensorTypeFilter = ref("");
 
 const sensorTypesStore = useSensorTypesStore();
 
+// Fetch sensor data and sensor types on mount
 onMounted(async () => {
   await sensorTypesStore.fetchSensorTypes();
   fetchSensorData();
@@ -106,14 +104,17 @@ const fetchSensorData = async () => {
   }
 };
 
+// Sort the logs by timestamp in descending order
 const sortedLogs = (logs) => {
   return [...logs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 };
 
+// Get unique sensor types
 const uniqueSensorTypes = computed(() => {
   return sensorTypesStore.sensorTypes;
 });
 
+// Filter sensors based on the selected type
 const filteredSensors = computed(() => {
   if (!sensorTypeFilter.value) return sensors.value;
 
@@ -129,7 +130,56 @@ const filteredSensors = computed(() => {
 
   return [];
 });
+
+// Get sensor type label based on sensorTypeCode
+const sensorTypeLabel = (sensorTypeCode) => {
+  switch (sensorTypeCode) {
+    case 1:
+      return "Temperature Sensor";
+    case 2:
+      return "Atmospheric Pressure Sensor";
+    case 3:
+      return "Accelerometer";
+    case 4:
+      return "Global Positioning Sensor";
+    case 5:
+      return "Humidity Sensor";
+    case 6:
+      return "Light Sensor";
+    case 7:
+      return "Infrared Sensor";
+    case 8:
+      return "Ultrasonic Sensor";
+    default:
+      return "Unknown Sensor Type";
+  }
+};
+
+// Format the value based on sensor type
+const formattedValue = (value, sensorTypeCode) => {
+  switch (sensorTypeCode) {
+    case 1: // Temperature Sensor
+      return `${value} °C`; // Assuming the value is in Celsius
+    case 2: // Atmospheric Pressure Sensor
+      return `${value} hPa`; // Assuming the value is in hPa (hectopascals)
+    case 3: // Accelerometer
+      return `${value} m/s²`; // Assuming the value is in meters per second squared
+    case 4: // GPS
+      return `Latitude/Longitude: ${value}`; // Assuming the value represents coordinates
+    case 5: // Humidity Sensor
+      return `${value} % RH`; // Assuming the value is in percentage relative humidity
+    case 6: // Light Sensor
+      return `${value} lux`; // Assuming the value is in lux
+    case 7: // Infrared Sensor
+      return value > 0 ? "Detected" : "Not Detected"; // Assuming binary detection (0 or 1)
+    case 8: // Ultrasonic Sensor
+      return `${value} meters`; // Assuming the value is a distance in meters
+    default:
+      return value; // Default case if the sensor type is not recognized
+  }
+};
 </script>
+
 
 <style scoped>
 .container {
