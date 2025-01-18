@@ -32,7 +32,7 @@
         No sensors found for the selected filter.
       </div>
 
-      <div v-for="sensor in filteredSensors" :key="sensor.code" class="sensor-card">
+      <div @click="goToSensor(sensor.code)" v-for="sensor in filteredSensors" :key="sensor.code" class="cursor-pointer sensor-card">
         <h2 class="sensor-title">{{ sensorTypeLabel(sensor.sensorTypeCode) }} (Code: {{ sensor.code }})</h2>
         <ul class="sensor-log">
           <li v-for="log in sortedLogs(sensor.log)" :key="log.timestamp" class="log-item">
@@ -51,7 +51,7 @@ import { useAuthStore } from "~/store/auth";
 import { useSensorTypesStore } from "~/store/sensor-types";
 
 const route = useRoute();
-
+const router = useRouter();
 const codeOrder = route.params.code_order;
 const codeVolume = route.params.code_volume;
 
@@ -61,6 +61,11 @@ const error = ref(null);
 const sensorTypeFilter = ref("");
 
 const sensorTypesStore = useSensorTypesStore();
+
+const goToSensor = (sensorCode) => {
+  router.push(`/sensors/${sensorCode}`);
+};
+
 
 // Fetch sensor data and sensor types on mount
 onMounted(async () => {
@@ -217,6 +222,10 @@ const formattedValue = (value, sensorTypeCode) => {
   padding: 15px;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sensor-card:hover {
+  background-color: #f0f0f09c;
 }
 
 .sensor-title {
