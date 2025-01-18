@@ -43,7 +43,7 @@ onMounted(fetchSensors);
     <div v-if="error" class="error">{{ error }}</div>
     <div v-else>
       <ul class="sensor-list">
-        <li v-for="sensor in sensors" :key="sensor.id" class="sensor-card">
+        <li v-for="sensor in sensors" :key="sensor.code" class="sensor-card">
           <div class="sensor-info">
             <h2>{{ sensor.code }}</h2>
             <p><strong>Type:</strong> {{ sensor.type }}</p>
