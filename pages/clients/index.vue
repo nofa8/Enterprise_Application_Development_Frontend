@@ -32,7 +32,7 @@
           <tr
             v-for="client in filteredClients"
             :key="client.email"
-            class="hover:bg-gray-50"
+            class="hover:bg-gray-50 cursor-pointer"
             @click="
               $router.push({
                 path: 'clients/'+client.id,

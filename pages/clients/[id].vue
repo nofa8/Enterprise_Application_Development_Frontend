@@ -19,8 +19,8 @@
 
             <!-- Exibindo Orders -->
             <div v-if="client.ordersDTO.length" class="space-y-4 mt-4">
-                <h3 class="text-xl font-semibold text-gray-800">Orders</h3>
-                <div v-for="order in client.ordersDTO" :key="order.code" class="bg-gray-100 p-4 rounded-md">
+                <h3 class=" text-xl font-semibold text-gray-800">Orders</h3>
+                <div  @click="goToOrderDetails(order.code)" v-for="order in client.ordersDTO" :key="order.code" class="cursor-pointer hover:bg-gray-200 bg-gray-100 p-4 rounded-md">
                     <div class="flex justify-between items-center">
                         <span class="font-medium text-gray-700">Order Code:</span>
                         <span class="text-gray-900">{{ order.code }}</span>
@@ -64,6 +64,7 @@ import { useRoute } from 'vue-router';
 import { useRuntimeConfig } from '#imports';
 import { useAuthStore } from '~/store/auth';
 
+const router = useRouter();
 const route = useRoute();
 const id = route.params.id;
 
@@ -72,6 +73,11 @@ const api = config.public.API_URL;
 
 const authStore = useAuthStore();
 const client = ref(null);
+
+
+const goToOrderDetails = (orderCode) => {
+    router.push(`/orders/${orderCode}`);
+};
 
 const formatDate = (timestamp) => {
     const date = new Date(timestamp);

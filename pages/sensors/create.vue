@@ -58,6 +58,7 @@ const api = inject('api')
 const sensorId = ref('');
 const sensorValue = ref('');
 async function updateSensor() {
+  messages.value = '';
     await sensorsStore.updateSensor(sensorId.value, sensorValue.value);
     if (sensorsStore.error) {
       messages.value = sensorsStore.error;

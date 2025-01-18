@@ -29,17 +29,19 @@
     </div>
 
     <!-- Client Information -->
-    <div v-if="authStore.getUserType === 'Manager'" class="mt-10">
+    <div  v-if="authStore.getUserType === 'Manager'" class="mt-10">
       <h3 class="text-xl font-semibold mb-4 border-b border-gray-200 pb-2">
         Client Information
       </h3>
-      <div class="grid grid-cols-2 gap-x-4">
-        <span class="font-semibold">Client Name:</span>
-        <span>{{ order.client?.name || "N/A" }}</span>
-      </div>
-      <div class="grid grid-cols-2 gap-x-4">
-        <span class="font-semibold">Client Email:</span>
-        <span>{{ order.client?.email || "N/A" }}</span>
+      <div @click="getClientDetails(order?.client.code)" class="hover:bg-gray-100 cursor-pointer p-4 bg-gray-50 rounded-lg shadow-sm">
+        <div class="grid grid-cols-2 gap-x-4">
+          <span class="font-semibold">Client Name:</span>
+          <span>{{ order.client?.name || "N/A" }}</span>
+        </div>
+        <div class="grid grid-cols-2 gap-x-4">
+          <span class="font-semibold">Client Email:</span>
+          <span>{{ order.client?.email || "N/A" }}</span>
+        </div>
       </div>
     </div>
 
@@ -97,6 +99,10 @@ const code = route.params.code;
 const router = useRouter();
 const config = useRuntimeConfig();
 const api = config.public.API_URL;
+
+const getClientDetails = (clientCode) =>{
+  router.push(`/clients/${clientCode}`);
+}
 
 const authStore = useAuthStore();
 const order = ref(null);
