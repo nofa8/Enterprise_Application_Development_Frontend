@@ -107,6 +107,7 @@ export const useAuthStore = defineStore("auth", () => {
         token.value = storedToken;
         user.value = storedUser;
         isLogged.value = true;
+        router.push('/dashboard')
       } catch (err) {
         console.error(err);
       }
