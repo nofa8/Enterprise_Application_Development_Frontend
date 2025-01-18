@@ -9,7 +9,7 @@ export const useSensorTypesStore = defineStore("sensorTypes", () => {
     error.value = null;
 
     try {
-      const response = await $fetch(`${api}/sensors-types`, {
+      const response = await $fetch(`${api}/sensor-types`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

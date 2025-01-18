@@ -25,13 +25,13 @@
       </div>
   
       <!-- Sensors -->
-      <div class="mt-10">
+      <div class="mt-10" >
         <h3 class="text-xl font-semibold mb-4 border-b border-gray-200 pb-2">Sensors</h3>
         <ul v-if="volume.sensors.length" class="space-y-4">
           <li
             v-for="sensor in volume.sensors"
             :key="sensor.code"
-            class="p-4 bg-gray-50 rounded-lg shadow-sm"
+            class="p-4 bg-gray-50 rounded-lg shadow-sm cursor-pointer" @click="getSensorsDetails() "
           >
             <div class="grid grid-cols-2 gap-x-4">
               <span class="font-semibold">Sensor Code:</span>
@@ -97,16 +97,23 @@
   import { useRoute } from "vue-router";
   import { useRuntimeConfig } from "#imports";
   import { useAuthStore } from "~/store/auth";
-  
+
+
+  const router = useRouter();
   const route = useRoute();
   const codeOrder = route.params.code_order;
-  const codeVolume = route.params.code_volume;
+  const codeVolume = route.params.code;
   
   const config = useRuntimeConfig();
   const api = config.public.API_URL;
   
   const authStore = useAuthStore();
   const volume = ref(null);
+
+  const getSensorsDetails = () => {
+    const targetUrl = `/orders/${codeOrder}/volumes/${codeVolume}/sensors`;
+    navigateTo(targetUrl);
+  };
   
   const fetchVolumeDetails = async () => {
     try {
