@@ -18,6 +18,34 @@
           </nuxt-link>
         </div>
 
+        <!-- Logistic Actions -->
+        <div v-if="authStore.getUserType === 'Logistic'" class="flex flex-col space-y-4">
+          <nuxt-link
+            to="/orders/create"
+            class="block px-4 py-3 text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+          >
+            Insert Orders
+          </nuxt-link>
+          <nuxt-link
+            to="/orders/update"
+            class="block px-4 py-3 text-center bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
+          >
+            Update Orders
+          </nuxt-link>
+          <nuxt-link
+            to="/orders/[code_order]/volumes/create"
+            class="block px-4 py-3 text-center bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+          >
+            Insert Volumes
+          </nuxt-link>
+          <nuxt-link
+            to="/orders/[code_order]/volumes/update"
+            class="block px-4 py-3 text-center bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+          >
+            Update Volumes
+          </nuxt-link>
+        </div>
+
         <!-- Admin Actions -->
         <div v-if="authStore.getUserType === 'Manager'" class="flex flex-col space-y-4">
           <nuxt-link
