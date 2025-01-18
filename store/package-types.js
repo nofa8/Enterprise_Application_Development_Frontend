@@ -1,32 +1,32 @@
 import { defineStore } from "pinia";
 
-export const useSensorTypesStore = defineStore("sensorTypes", () => {
-  const sensorTypes = ref([]); 
+export const usePackageTypesStore = defineStore("packageTypes", () => {
+  const packageTypes = ref([]); 
   const error = ref(null); 
   const api = useRuntimeConfig().public.API_URL; 
   
 
-  const fetchSensorTypes = async () => {
+  const fetchPackageTypes = async () => {
     error.value = null;
 
     try {
-      const response = await $fetch(`${api}/sensor-types`, {
+      const response = await $fetch(`${api}/package-types`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
       });
-      sensorTypes.value = response; 
+      packageTypes.value = response; 
     } catch (err) {
-      error.value = "Failed to fetch sensor types.";
+      error.value = "Failed to fetch package types.";
       console.error(err);
     }
   };
 
   return {
-    sensorTypes,
+    packageTypes,
     error,
-    fetchSensorTypes,
+    fetchPackageTypes,
   };
 });

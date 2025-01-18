@@ -16,21 +16,20 @@
       </div>
       <div class="mb-4">
         <label for="client-code" class="block text-sm font-medium text-gray-700 mb-1">Client ID:</label>
-        <input v-model.trim="orderForm.clientCode" type="text" id="client-code"
+        <input v-model.trim="orderForm.clientCode" type="number" id="client-code"
           class="w-full px-3 py-2 border border-gray-300 rounded-md" />
         <span v-if="clientCodeError" class="error">ERROR: {{ clientCodeError }}</span>
       </div>
       <div class="mb-4">
         <label for="order-state" class="block text-sm font-medium text-gray-700 mb-1">State:</label>
         <select v-model="orderForm.state" id="order-state" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-          <option disabled value="">-- Select a state --</option>
           <option v-for="state in validStates" :key="state" :value="state">{{ state }}</option>
         </select>
         <span v-if="stateError" class="error">ERROR: {{ stateError }}</span>
       </div>
       <div class="mb-4">
         <label for="purchase-date" class="block text-sm font-medium text-gray-700 mb-1">Purchase Date:</label>
-        <input v-model.trim="orderForm.purchaseDate" type="date" id="purchase-date"
+        <input v-model.trim="orderForm.purchaseDate" type="datetime-local" id="purchase-date"
           class="w-full px-3 py-2 border border-gray-300 rounded-md" />
         <span v-if="purchaseDateError" class="error">ERROR: {{ purchaseDateError }}</span>
       </div>
@@ -40,7 +39,9 @@
           class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">CREATE</button>
       </div>
     </form>
-    <pre>{{ messages }}</pre>
+    <div v-if="showMessage" :class="messageClass" class="mt-4 p-4 border rounded">
+      {{ messages }}
+    </div>
   </div>
 </template>
 
@@ -57,15 +58,22 @@ const orderForm = reactive({
   state: null,
   purchaseDate: null,
 });
-const messages = ref([]);
+const messages = ref('');
+const showMessage = ref(false);
+const isError = ref(false);
 const config = useRuntimeConfig();
 const api = config.public.API_URL;
 
 const validStates = ['PROCESSED', 'SHIPPED', 'IN_TRANSIT', 'DELIVERED', 'RETURNED'];
 
+const messageClass = computed(() => {
+  return isError.value ? 'bg-red-100 border-red-400 text-red-700' : 'bg-green-100 border-green-400 text-green-700';
+});
+
 const codeError = computed(() => {
   if (orderForm.code === null) return null;
   if (!orderForm.code) return 'Code is required';
+  if (orderForm.code <= 0) return 'Code must be greater than 0';
   return null;
 });
 
@@ -79,6 +87,7 @@ const priceError = computed(() => {
 const clientCodeError = computed(() => {
   if (orderForm.clientCode === null) return null;
   if (!orderForm.clientCode) return 'Client id is required';
+  if (orderForm.clientCode <= 0) return 'Client id must be greater than 0';
   return null;
 });
 
@@ -101,6 +110,9 @@ const isFormInvalid = computed(() => {
 
 async function create() {
   try {
+    messages.value = '';
+    showMessage.value = false;
+    isError.value = false;
     const token = authStore.token;
     await $fetch(`${api}/orders`, {
       method: 'POST',
@@ -111,16 +123,18 @@ async function create() {
       },
       body: orderForm,
       onResponse({ request, response, options }) {
-        messages.value.push({
-          method: options.method,
-          request: request,
-          status: response.status,
-          statusText: response.statusText,
-          payload: response._data,
-        });
+        if (response.ok) {
+          messages.value = 'Order created successfully!';
+        } else {
+          messages.value = response._data;
+          isError.value = true;
+        }
+        showMessage.value = true;
       },
     });
   } catch (e) {
+    showMessage.value = true;
+    isError.value = true;
     console.log(e);
   }
 }
