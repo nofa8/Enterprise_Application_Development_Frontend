@@ -1,67 +1,84 @@
 <template>
-  <div v-if="sensorData" class="sensor-container">
-    <h1 class="sensor-title">Sensor Details</h1>
-    <div class="sensor-info">
-      <p><strong>Code:</strong> <span class="sensor-value">{{ sensorData.code }}</span></p>
-      <p><strong>Sensor Type:</strong> <span class="sensor-value">{{ sensorTypeLabel }}</span></p>
-      <p><strong>Value:</strong> <span class="sensor-value">{{ formattedValue }}</span></p>
-      <p><strong>Last Update:</strong> <span class="sensor-value">{{ formatDate(sensorData.lastUpdate) }}</span></p>
-
-      <div class="mt-3">
-        <nuxt-link
-            :to="`/sensors/${code}/log`"
-            class="text-white bg-blue-600 px-4 py-2  rounded-lg transition-all hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-4">
-          Histórico
-        </nuxt-link>
-      </div>
-
-
-
+  <div v-if="sensorData" class="sensor-container mx-auto max-w-screen-md p-6 bg-white shadow rounded-lg">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">Sensor Details</h1>
+    <div class="sensor-info space-y-4">
+      <p class="flex justify-between">
+        <strong class="text-gray-600">Code:</strong>
+        <span class="text-gray-900">{{ sensorData.code }}</span>
+      </p>
+      <p class="flex justify-between">
+        <strong class="text-gray-600">Sensor Type:</strong>
+        <span class="text-gray-900">{{ sensorTypeLabel }}</span>
+      </p>
+      <p class="flex justify-between">
+        <strong class="text-gray-600">Value:</strong>
+        <span class="text-gray-900">{{ formattedValue }}</span>
+      </p>
+      <p class="flex justify-between">
+        <strong class="text-gray-600">Last Update:</strong>
+        <span class="text-gray-900">{{ formatDate(sensorData.lastUpdate) }}</span>
+      </p>
     </div>
-    <div v-if="sensorData.sensorTypeCode === 4" id="map" class="map-container"></div>
+
+    <div class="mt-6 flex space-x-4 justify-center">
+      <nuxt-link
+        :to="`/sensors/${code}/log`"
+        class="text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition"
+      >
+        History
+      </nuxt-link>
+      <nuxt-link
+        :to="`/sensors`"
+        class="text-white bg-gray-600 px-4 py-2 rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 transition"
+      >
+        Return
+      </nuxt-link>
+    </div>
+
+    <div v-if="sensorData.sensorTypeCode === 4" id="map" class="mt-6 h-64 rounded-lg bg-gray-200"></div>
   </div>
-  <div v-else class="loading">
-    <p>Loading sensor data...</p>
+  <div v-else class="loading flex items-center justify-center h-screen">
+    <p class="text-lg text-gray-600">Loading sensor data...</p>
   </div>
 </template>
 
+
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import {useAuthStore} from "~/store/auth";
-import {useRoute} from "#vue-router";
-import maplibregl from 'maplibre-gl';
+import { ref, onMounted } from "vue";
+import { useAuthStore } from "~/store/auth";
+import { useRoute } from "#vue-router";
+import maplibregl from "maplibre-gl";
 
 // Set your Mapbox access token
 
-
-
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 const route = useRoute();
 const code = route.params.code;
 // Define the sensor data object
 const sensorData = ref<any>(null);
-
+const api = inject("api");
 // Function to fetch sensor data from the API
-const fetchSensorData = async (sensorId: number) => {
-  const token = authStore.token ; // Replace with actual token logic
-  const url = `http://localhost:8080/monitor/api/sensors/${sensorId}`;
+const fetchSensorData = async (sensorId: string | string[]) => {
+  const token = authStore.token;
+  const url = api + `/sensors/${sensorId}`;
 
   try {
     const response = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
     });
 
     if (response.ok) {
       sensorData.value = await response.json();
     } else {
-      console.error('Failed to fetch sensor data:', response.status);
+      console.error("Failed to fetch sensor data:", response.status);
     }
   } catch (error) {
-    console.error('Error fetching sensor data:', error);
+    console.error("Error fetching sensor data:", error);
   }
 };
 
@@ -75,23 +92,23 @@ const formatDate = (timestamp: number): string => {
 const sensorTypeLabel = computed(() => {
   switch (sensorData.value?.sensorTypeCode) {
     case 1:
-      return 'Temperature Sensor';
+      return "Temperature Sensor";
     case 2:
-      return 'Atmospheric Pressure Sensor';
+      return "Atmospheric Pressure Sensor";
     case 3:
-      return 'Accelerometer';
+      return "Accelerometer";
     case 4:
-      return 'Global Positioning Sensor';
+      return "Global Positioning Sensor";
     case 5:
-      return 'Humidity Sensor';
+      return "Humidity Sensor";
     case 6:
-      return 'Light Sensor';
+      return "Light Sensor";
     case 7:
-      return 'Infrared Sensor';
+      return "Infrared Sensor";
     case 8:
-      return 'Ultrasonic Sensor';
+      return "Ultrasonic Sensor";
     default:
-      return 'Unknown Sensor Type';
+      return "Unknown Sensor Type";
   }
 });
 
@@ -113,7 +130,7 @@ const formattedValue = computed(() => {
     case 6: // Light Sensor
       return `${value} lux`; // Assuming the value is in lux
     case 7: // Infrared Sensor
-      return value > 0 ? 'Detected' : 'Not Detected'; // Assuming binary detection (0 or 1)
+      return value > 0 ? "Detected" : "Not Detected"; // Assuming binary detection (0 or 1)
     case 8: // Ultrasonic Sensor
       return `${value} meters`; // Assuming the value is a distance in meters
     default:
@@ -122,7 +139,7 @@ const formattedValue = computed(() => {
 });
 
 // Fetch the sensor data when the component is mounted
-onMounted( () => {
+onMounted(() => {
   const sensorId = code; // Use the sensor ID you want to fetch
   fetchSensorData(sensorId);
 });
@@ -133,35 +150,34 @@ watchEffect(() => {
   }
 });
 
-
-
 const initializeMap = async () => {
   await nextTick(); // Ensure the DOM is updated and map container is available
 
   if (sensorData.value?.sensorTypeCode === 4) {
-    const coordinates = sensorData.value?.value.split(',');
+    const coordinates = sensorData.value?.value.split(",");
     const lat = parseFloat(coordinates[0]);
     const lon = parseFloat(coordinates[1]);
 
     if (!isNaN(lat) && !isNaN(lon)) {
       // Initialize MapLibre map
       const map = new maplibregl.Map({
-        container: 'map', // Map container ID
+        container: "map", // Map container ID
         style: {
           version: 8,
           sources: {
             osm: {
-              type: 'raster',
-              tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+              type: "raster",
+              tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
               tileSize: 256,
-              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             },
           },
           layers: [
             {
-              id: 'osm-tiles',
-              type: 'raster',
-              source: 'osm',
+              id: "osm-tiles",
+              type: "raster",
+              source: "osm",
             },
           ],
         },
@@ -170,8 +186,10 @@ const initializeMap = async () => {
       });
 
       // Add a marker at the coordinates
-      let marker = new maplibregl.Marker()
-          .setLngLat([lon+0.002, lat+0.0012]);
+      let marker = new maplibregl.Marker().setLngLat([
+        lon + 0.002,
+        lat + 0.0012,
+      ]);
 
       // Disable interactions to make the map fixed
       map.dragPan.disable();
@@ -180,20 +198,16 @@ const initializeMap = async () => {
       map.doubleClickZoom.disable();
       map.touchZoomRotate.disable();
 
-      marker.addTo(map)
+      marker.addTo(map);
     } else {
-      console.error('Invalid coordinates:', coordinates);
+      console.error("Invalid coordinates:", coordinates);
     }
-    console.log('Centering map at:', [lat, lon]);
-
+    console.log("Centering map at:", [lat, lon]);
   }
 };
-
 </script>
 
 <style scoped>
-
-
 .sensor-container {
   max-width: 800px;
   margin: 20px auto;
@@ -205,7 +219,7 @@ const initializeMap = async () => {
 
 .sensor-title {
   text-align: center;
-  color: #4CAF50;
+  color: #4caf50;
   font-size: 28px;
   margin-bottom: 20px;
 }
@@ -242,13 +256,13 @@ strong {
 }
 
 .sensor-value {
-  color: #00796B;
+  color: #00796b;
   font-weight: bold;
 }
 
 .log-title {
   margin-top: 20px;
-  color: #4CAF50;
+  color: #4caf50;
   font-size: 20px;
 }
 
@@ -284,42 +298,42 @@ strong {
 }
 
 .sensor-info p[data-type="1"] {
-  background-color: #FFEBEE; /* Light pink for temperature sensor */
-  color: #D32F2F;
+  background-color: #ffebee; /* Light pink for temperature sensor */
+  color: #d32f2f;
 }
 
 .sensor-info p[data-type="2"] {
-  background-color: #E3F2FD; /* Light blue for atmospheric pressure sensor */
-  color: #1976D2;
+  background-color: #e3f2fd; /* Light blue for atmospheric pressure sensor */
+  color: #1976d2;
 }
 
 .sensor-info p[data-type="3"] {
-  background-color: #F3E5F5; /* Light purple for accelerometer */
-  color: #8E24AA;
+  background-color: #f3e5f5; /* Light purple for accelerometer */
+  color: #8e24aa;
 }
 
 .sensor-info p[data-type="4"] {
-  background-color: #C8E6C9; /* Light green for GPS */
-  color: #388E3C;
+  background-color: #c8e6c9; /* Light green for GPS */
+  color: #388e3c;
 }
 
 .sensor-info p[data-type="5"] {
-  background-color: #FFF9C4; /* Light yellow for humidity */
-  color: #FBC02D;
+  background-color: #fff9c4; /* Light yellow for humidity */
+  color: #fbc02d;
 }
 
 .sensor-info p[data-type="6"] {
-  background-color: #FFECB3; /* Light amber for light sensor */
-  color: #FF9800;
+  background-color: #ffecb3; /* Light amber for light sensor */
+  color: #ff9800;
 }
 
 .sensor-info p[data-type="7"] {
-  background-color: #F5F5F5; /* Light gray for infrared */
-  color: #607D8B;
+  background-color: #f5f5f5; /* Light gray for infrared */
+  color: #607d8b;
 }
 
 .sensor-info p[data-type="8"] {
-  background-color: #FFF3E0; /* Light orange for ultrasonic */
-  color: #FF5722;
+  background-color: #fff3e0; /* Light orange for ultrasonic */
+  color: #ff5722;
 }
 </style>

@@ -3,6 +3,11 @@
       <h1 class="text-center text-2xl font-bold mb-4">Update Volume</h1>
       <form @submit.prevent="update" class="flex flex-col">
         <div class="mb-4">
+          <label for="order-code" class="block text-sm font-medium text-gray-700 mb-1">Order Code:</label>
+          <input v-model.trim="codeOrder" type="number" id="order-code" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+          <span v-if="orderCodeError" class="error">ERROR: {{ codeError }}</span>
+        </div>
+        <div class="mb-4">
           <label for="volume-code" class="block text-sm font-medium text-gray-700 mb-1">Code:</label>
           <input v-model.trim="volumeForm.code" type="number" id="volume-code" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
           <span v-if="codeError" class="error">ERROR: {{ codeError }}</span>
@@ -26,25 +31,33 @@
   
   <script setup>
   import { reactive, ref, computed } from 'vue';
-  import { useRuntimeConfig, useRoute } from '#app';
+  import {  useRoute } from '#app';
+import { useAuthStore } from '~/store/auth';
   
   const route = useRoute();
-  const codeOrder = route.params.code_order;
-  const codeVolume = route.params.code_volume;
+  const authStore = useAuthStore();
+  const codeOrder = ref(null);
   
   const volumeForm = reactive({
     code: null,
     state: null,
   });
   const messages = ref([]);
-  const config = useRuntimeConfig();
-  const api = config.public.API_URL;
+  const api = inject('api');
   
   const validStates = ['PROCESSED', 'SHIPPED', 'IN_TRANSIT', 'DELIVERED', 'RETURNED'];
   
   const codeError = computed(() => {
     if (volumeForm.code === null) return null;
     if (!volumeForm.code) return 'Code is required';
+    if (volumeForm.code <= 0) return 'Order Code must be a positive number';
+    return null;
+  });
+
+  const orderCodeError = computed(() => {
+    if (codeOrder.value === null) return null;
+    if (!codeOrder.value) return 'Order Code is required';
+    if (codeOrder.value <= 0) return 'Order Code must be a positive number';
     return null;
   });
   
@@ -61,15 +74,15 @@
   
   async function update() {
     try {
-      const token = localStorage.getItem('token');
-      await $fetch(`${api}/orders/${codeOrder}/volumes/${codeVolume}`, {
+      const token = authStore.token ;
+      await $fetch(`${api}/orders/${codeOrder.value}/volumes/${volumeForm.code}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
         },
-        body: volumeForm,
+        body: JSON.stringify(volumeForm.state),
         onResponse({ request, response, options }) {
           messages.value.push({
             method: options.method,
