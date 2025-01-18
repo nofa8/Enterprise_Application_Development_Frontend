@@ -27,7 +27,7 @@ export const useSensorsStore = defineStore("sensors", () => {
     error.value = null;
     try {
       const response = await $fetch(`${api}/sensors/${id}`, {
-        method: "POST",
+        method: "PATCH",
         body:  newValue,
         headers: {
           "Content-Type": "application/json",
