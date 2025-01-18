@@ -6,11 +6,10 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref(null);
   const isLogged = ref(false);
   const isLoggedIn = computed(() => isLogged.value);
-  
-  
+
   const getUserType = computed(() => user.value?.role);
   const getUserName = computed(() => user.value?.name);
-  
+
   const getUserEmail = computed(() => user.value?.email);
 
   const api = useRuntimeConfig().public.API_URL;
@@ -30,7 +29,7 @@ export const useAuthStore = defineStore("auth", () => {
         body: { email, password },
         headers: headers,
       });
-      
+
       if (!loginResponse) {
         throw new Error("Token not found in the response.");
       }
@@ -44,7 +43,7 @@ export const useAuthStore = defineStore("auth", () => {
         method: "GET",
         headers: combinedHeaders,
       });
-      
+
       login(userInfo, loginResponse);
 
       router.push("/dashboard");
@@ -59,49 +58,65 @@ export const useAuthStore = defineStore("auth", () => {
     token.value = userToken;
     isLogged.value = true;
 
-    localStorage.setItem('authToken', userToken);
-    localStorage.setItem('user', JSON.stringify(userData));
+    // Save data to sessionStorage (only for the session)
+    if (process.client) {
+      sessionStorage.setItem("authToken", userToken);
+      sessionStorage.setItem("user", JSON.stringify(userData));
+    }
   }
 
   function logout() {
     token.value = null;
     user.value = null;
     isLogged.value = false;
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    router.push('/auth/login');
+
+    // Remove from sessionStorage (on logout)
+    if (process.client) {
+      sessionStorage.removeItem("authToken");
+      sessionStorage.removeItem("user");
+    }
+
+    router.push("/auth/login");
   }
 
+  // Restore session on app load (only on client-side)
   async function restoreSession() {
-    try {
-      const combinedHeaders = {
-        ...headers,
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-      };
-  
-      const userInfo = await $fetch(api + "/auth/user", {
-        method: "GET",
-        headers: combinedHeaders,
-      });
-      if (!userInfo) {
-        return;
-      }
-      const storedToken = localStorage.getItem('authToken');
-      const storedUser = userInfo;
+    if (process.client) {
+      try {
+        const storedToken = sessionStorage.getItem("authToken");
+        const storedUser = JSON.parse(sessionStorage.getItem("user"));
 
-      if (storedToken && storedUser) {
+        if (!storedToken || !storedUser) {
+          return;
+        }
+
+        const combinedHeaders = {
+          ...headers,
+          Authorization: `Bearer ${storedToken}`,
+        };
+
+        const userInfo = await $fetch(api + "/auth/user", {
+          method: "GET",
+          headers: combinedHeaders,
+        });
+
+        if (!userInfo) {
+          return;
+        }
+
         token.value = storedToken;
         user.value = storedUser;
         isLogged.value = true;
+      } catch (err) {
+        console.error(err);
       }
     }
-    catch(err){
-      console.error(err);
-    }
-  
   }
 
-
+  // Call restoreSession on store initialization, only on client-side
+  if (process.client) {
+    restoreSession();
+  }
 
   return {
     token,
@@ -112,6 +127,7 @@ export const useAuthStore = defineStore("auth", () => {
     login,
     logout,
     restoreSession,
-    getUserEmail,getUserName
+    getUserEmail,
+    getUserName,
   };
 });
