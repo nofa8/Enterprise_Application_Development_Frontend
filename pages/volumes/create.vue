@@ -6,7 +6,7 @@
         <label for="order-code" class="block text-sm font-medium text-gray-700 mb-1">Order Code:</label>
         <input v-model.trim="codeOrder" type="number" id="order-code"
           class="w-full px-3 py-2 border border-gray-300 rounded-md" />
-        <span v-if="orderCodeError" class="error">ERROR: {{ codeError }}</span>
+        <span v-if="orderCodeError" class="error">ERROR: {{ orderCodeError }}</span>
       </div>
       <div class="mb-4">
         <label for="volume-code" class="block text-sm font-medium text-gray-700 mb-1">Code:</label>
@@ -192,7 +192,7 @@ async function create() {
   } catch (e) {
     showMessage.value = true;
     isError.value = true;
-    console.log(e);
+    // console.log(e);
   }
 }
 </script>

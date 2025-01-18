@@ -202,7 +202,7 @@ const initializeMap = async () => {
     } else {
       console.error("Invalid coordinates:", coordinates);
     }
-    console.log("Centering map at:", [lat, lon]);
+    // console.log("Centering map at:", [lat, lon]);
   }
 };
 </script>

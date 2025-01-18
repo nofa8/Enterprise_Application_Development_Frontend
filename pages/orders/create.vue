@@ -135,7 +135,7 @@ async function create() {
   } catch (e) {
     showMessage.value = true;
     isError.value = true;
-    console.log(e);
+    // console.log(e);
   }
 }
 </script>

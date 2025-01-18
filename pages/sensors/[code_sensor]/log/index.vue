@@ -15,7 +15,8 @@ const route = useRoute();
 const sensorLog = ref<{ value: string; timestamp: string }[]>([]);
 const errorMessage = ref<string | null>(null);
 const code_sensor = route.params.code_sensor;
-const url = `http://localhost:8080/monitor/api/sensors/${code_sensor}/log`;
+const api = inject("api");
+const url = `${api}/sensors/${code_sensor}/log`;
 
 // Definindo o tipo para o chartData
 interface ChartData {
@@ -56,7 +57,7 @@ const fetchSensorLog = async () => {
     if (!response.ok) throw new Error("Failed to fetch sensor log data.");
     const data = await response.json();
 
-    console.log("Fetched data:", data); // Debugging line to check the fetched data
+    // console.log("Fetched data:", data); // Debugging line to check the fetched data
 
     // Sort the data by timestamp (most recent first)
     sensorLog.value = data.sort((a: { timestamp: string }, b: { timestamp: string }) =>
@@ -70,11 +71,11 @@ const fetchSensorLog = async () => {
 // Watcher to update chart data when sensorLog changes
 watchEffect(() => {
   if (sensorLog.value.length > 0) {
-    console.log("Updating chart data..."); // Debugging line to check when chart data is updated
-    chartData.value.labels = sensorLog.value.map(log => log.timestamp); // Timestamps
-    chartData.value.datasets[0].data = sensorLog.value.map(log => parseFloat(log.value)); // Sensor values
+    // console.log("Updating chart data..."); // Debugging line to check when chart data is updated
+    chartData.value.labels = sensorLog.value.map(log => log.timestamp).reverse(); // Timestamps
+    chartData.value.datasets[0].data = sensorLog.value.map(log => parseFloat(log.value)).reverse(); // Sensor values
     chartKey.value++; // Força a re-renderização do gráfico
-    console.log("Chart data:", chartData.value); // Debugging line to check chart data before rendering
+    // console.log("Chart data:", chartData.value); // Debugging line to check chart data before rendering
   }
 });
 
