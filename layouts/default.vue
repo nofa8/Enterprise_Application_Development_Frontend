@@ -63,7 +63,7 @@
             <!-- Conditional Login/Logout -->
             <li v-if="authStore.isLoggedIn">
               <button
-                @click="authStore.logout"
+                @click="authStore.logout()"
                 class="px-4 py-2 bg-red-500 rounded text-white hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300"
               >
                 Logout
