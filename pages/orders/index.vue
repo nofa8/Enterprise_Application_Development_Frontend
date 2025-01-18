@@ -50,7 +50,7 @@ const authStore = useAuthStore();
 const orders = ref([]);
 const loading = ref(false);
 const router = useRouter();
-
+const api = inject('api');
 onMounted(() => {
   if (process.client) {
     fetchOrders(); // Call fetchOrders automatically when the component is mounted
@@ -66,7 +66,7 @@ const fetchOrders = async () => {
     }
 
     // Make the GET request
-    const response = await fetch('http://localhost:8080/monitor/api/orders', {
+    const response = await fetch(api+'/orders', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

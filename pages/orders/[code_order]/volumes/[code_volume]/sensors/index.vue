@@ -32,7 +32,7 @@
         No sensors found for the selected filter.
       </div>
 
-      <div @click="goToSensor(sensor.code)" v-for="sensor in filteredSensors" :key="sensor.code" class="cursor-pointer sensor-card">
+      <div @click="goToSensor(sensor.code)"  :class="[authStore.getUserType=='Manager' ? 'cursor-pointer': '']" v-for="sensor in filteredSensors" :key="sensor.code" class=" sensor-card">
         <h2 class="sensor-title">{{ sensorTypeLabel(sensor.sensorTypeCode) }} (Code: {{ sensor.code }})</h2>
         <ul class="sensor-log">
           <li v-for="log in sortedLogs(sensor.log)" :key="log.timestamp" class="log-item">
@@ -61,12 +61,16 @@ const error = ref(null);
 const sensorTypeFilter = ref("");
 
 const sensorTypesStore = useSensorTypesStore();
+const authStore = useAuthStore();
 
 const goToSensor = (sensorCode) => {
+  if (authStore.getUserType !== 'Manager') {
+    return;
+  }
   router.push(`/sensors/${sensorCode}`);
 };
 
-
+const api = inject('api');
 // Fetch sensor data and sensor types on mount
 onMounted(async () => {
   await sensorTypesStore.fetchSensorTypes();
@@ -74,10 +78,9 @@ onMounted(async () => {
 });
 
 const fetchSensorData = async () => {
-  const authStore = useAuthStore();
   const token = authStore.token;
 
-  let apiUrl = `http://localhost:8080/monitor/api/orders/${codeOrder}/volumes/${codeVolume}/sensors`;
+  let apiUrl = `${api}/orders/${codeOrder}/volumes/${codeVolume}/sensors`;
 
   if (sensorTypeFilter.value) {
     apiUrl += `?sensorType=${sensorTypeFilter.value}`;
