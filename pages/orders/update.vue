@@ -4,15 +4,14 @@
         <form @submit.prevent="update" class="flex flex-col">
             <div class="mb-4">
                 <label for="order-code" class="block text-sm font-medium text-gray-700 mb-1">Code:</label>
-                <input v-model.trim="orderForm.code" type="number" id="order-code"
+                <input v-model.trim="code" type="number" id="order-code"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md" />
                 <span v-if="codeError" class="error">ERROR: {{ codeError }}</span>
             </div>
             <div class="mb-4">
                 <label for="order-state" class="block text-sm font-medium text-gray-700 mb-1">State:</label>
-                <select v-model="orderForm.state" id="order-state"
+                <select v-model="state" id="order-state"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                    <option disabled value="">-- Select a state --</option>
                     <option v-for="state in validStates" :key="state" :value="state">{{ state }}</option>
                 </select>
                 <span v-if="stateError" class="error">ERROR: {{ stateError }}</span>
@@ -31,11 +30,13 @@
 <script setup>
 import { reactive, ref, computed } from 'vue';
 import { useRuntimeConfig } from '#app';
+import { useAuthStore } from '~/store/auth';
+const authStore = useAuthStore();
 
-const orderForm = reactive({
-    code: null,
-    state: null
-});
+
+const state = ref(null);
+const code  = ref(null);
+
 const messages = ref([]);
 const config = useRuntimeConfig();
 const api = config.public.API_URL;
@@ -43,15 +44,15 @@ const api = config.public.API_URL;
 const validStates = ['PROCESSED', 'SHIPPED', 'IN_TRANSIT', 'DELIVERED', 'RETURNED'];
 
 const codeError = computed(() => {
-  if (orderForm.code === null) return null;
-  if (!orderForm.code) return 'Code is required';
+  if (code.value === null) return null;
+  if (!code.value) return 'Code is required';
   return null;
 });
 
 const stateError = computed(() => {
-    if (orderForm.state === null) return null;
-    if (!orderForm.state) return 'State is required';
-    if (!validStates.includes(orderForm.state)) return `State must be one of: ${validStates.join(', ')}`;
+    if (state.value === null) return null;
+    if (!state.value) return 'State is required';
+    if (!validStates.includes(state.value)) return `State must be one of: ${validStates.join(', ')}`;
     return null;
 });
 
@@ -61,15 +62,16 @@ const isFormInvalid = computed(() => {
 
 async function update() {
     try {
-        const token = localStorage.getItem('token');
-        await $fetch(`${api}/orders/${orderForm.code}`, {
+        console.log(state.value);
+        const token = authStore.token;
+        await $fetch(`${api}/orders/${code.value}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json',
             },
-            body: orderForm,
+            body: JSON.stringify(state.value)  ,
             onResponse({ request, response, options }) {
                 messages.value.push({
                     method: options.method,

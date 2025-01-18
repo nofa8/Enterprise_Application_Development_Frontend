@@ -47,7 +47,9 @@
 <script setup>
 import { reactive, ref, computed } from 'vue';
 import { useRuntimeConfig } from '#app';
+import { useAuthStore } from '~/store/auth';
 
+const authStore = useAuthStore();
 const orderForm = reactive({
   code: null,
   price: null,
@@ -99,7 +101,7 @@ const isFormInvalid = computed(() => {
 
 async function create() {
   try {
-    const token = localStorage.getItem('token');
+    const token = authStore.token;
     await $fetch(`${api}/orders`, {
       method: 'POST',
       headers: {

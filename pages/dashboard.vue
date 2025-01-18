@@ -33,13 +33,13 @@
             Update Orders
           </nuxt-link>
           <nuxt-link
-            to="/orders/[code_order]/volumes/create"
+            to="/volumes/create"
             class="block px-4 py-3 text-center bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
           >
             Insert Volumes
           </nuxt-link>
           <nuxt-link
-            to="/orders/[code_order]/volumes/update"
+            to="/volumes/update"
             class="block px-4 py-3 text-center bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
           >
             Update Volumes

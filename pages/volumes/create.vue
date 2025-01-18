@@ -1,7 +1,13 @@
 <template>
     <div class="volume-create max-w-md mx-auto p-6 border border-gray-300 rounded-lg">
       <h1 class="text-center text-2xl font-bold mb-4">Create Volume</h1>
+    
       <form @submit.prevent="create" class="flex flex-col">
+        <div class="mb-4">
+          <label for="order-code" class="block text-sm font-medium text-gray-700 mb-1">Order Code:</label>
+          <input v-model.trim="codeOrder" type="number" id="order-code" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+          <span v-if="orderCodeError" class="error">ERROR: {{ codeError }}</span>
+        </div>
         <div class="mb-4">
           <label for="volume-code" class="block text-sm font-medium text-gray-700 mb-1">Code:</label>
           <input v-model.trim="volumeForm.code" type="number" id="volume-code" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
@@ -17,14 +23,14 @@
         </div>
         <div class="mb-4">
           <label for="package-type" class="block text-sm font-medium text-gray-700 mb-1">Package Type:</label>
-          <input v-model.trim="volumeForm.packageType" type="number" id="package-type" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+          <input v-model.trim="volumeForm.packageTypeCode" type="number" id="package-type" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
           <span v-if="packageTypeError" class="error">ERROR: {{ packageTypeError }}</span>
         </div>
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">Sensors:</label>
           <div v-for="(sensor, index) in volumeForm.sensors" :key="index" class="mb-2">
             <input v-model.trim="sensor.code" type="number" placeholder="Sensor Code" class="w-full px-3 py-2 border border-gray-300 rounded-md mb-1" />
-            <input v-model.trim="sensor.sensorType" type="text" placeholder="Sensor Type" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+            <input v-model.trim="sensor.sensorTypeCode" type="text" placeholder="Sensor Type" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
             <button type="button" @click="removeSensor(index)" class="text-red-500 mt-1">Remove</button>
           </div>
           <button type="button" @click="addSensor" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700">Add Sensor</button>
@@ -52,26 +58,33 @@
   <script setup>
   import { reactive, ref, computed } from 'vue';
   import { useRuntimeConfig, useRoute } from '#app';
+import { useAuthStore } from '~/store/auth';
   
-  const route = useRoute();
-  const codeOrder = route.params.code_order;
-  
+  const codeOrder = ref(null);
+  const authStore = useAuthStore();
   const volumeForm = reactive({
     code: null,
     state: null,
-    packageType: null,
-    sensors: [{ code: null, sensorType: '' }],
+    packageTypeCode: null,
+    sensors: [{ code: null, sensorTypeCode: '' }],
     products: [{ code: null, amount: null }],
   });
   const messages = ref([]);
-  const config = useRuntimeConfig();
-  const api = config.public.API_URL;
+  const api = inject('api');
   
-  const validStates = ['PROCESSED', 'SHIPPED', 'IN_TRANSIT', 'DELIVERED', 'RETURNED'];
+  const validStates = ['PACKED', 'IN_TRANSIT', 'SHIPPED', 'DELIVERED', 'RETURNED'];
   
   const codeError = computed(() => {
     if (volumeForm.code === null) return null;
     if (!volumeForm.code) return 'Code is required';
+    if (volumeForm.code <= 0) return 'Order Code must be a positive number';
+    return null;
+  });
+
+  const orderCodeError = computed(() => {
+    if (codeOrder.value === null) return null;
+    if (!codeOrder.value) return 'Order Code is required';
+    if (codeOrder.value <= 0) return 'Order Code must be a positive number';
     return null;
   });
   
@@ -83,8 +96,8 @@
   });
   
   const packageTypeError = computed(() => {
-    if (volumeForm.packageType === null) return null;
-    if (!volumeForm.packageType) return 'Package Type is required';
+    if (volumeForm.packageTypeCode === null) return null;
+    if (!volumeForm.packageTypeCode) return 'Package Type is required';
     return null;
   });
   
@@ -103,7 +116,7 @@
   });
   
   function addSensor() {
-    volumeForm.sensors.push({ code: null, sensorType: '' });
+    volumeForm.sensors.push({ code: null, sensorTypeCode: '' });
   }
   
   function removeSensor(index) {
@@ -120,15 +133,16 @@
   
   async function create() {
     try {
-      const token = localStorage.getItem('token');
-      await $fetch(`${api}/orders/${codeOrder}/volumes`, {
+      const token = authStore.token;
+      console.log(codeOrder.value);
+      await $fetch(`${api}/orders/${codeOrder.value}/volumes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
         },
-        body: JSON.stringify(volumeForm),
+        body: JSON.stringify([volumeForm]),
         onResponse({ request, response, options }) {
           messages.value.push({
             method: options.method,
